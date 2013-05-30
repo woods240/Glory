@@ -1,0 +1,36 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<TaskConfig>
+    <Project name="Demo（项目名称，方便维护）">
+        <Task>
+            <Name>任务1：每小时的第8、26、40分钟（30秒），定时打开“驾校一点通”</Name>
+            <BactchFile>test2.bat</BactchFile>
+            <TimingPolicy>
+                <BeginDate>2013-5-18 0:0:0</BeginDate>
+                <EndDate>2013-5-20 16:40:30</EndDate>
+                <Period>小时</Period>
+                <ExecutePoints>8,26,40</ExecutePoints>
+            </TimingPolicy>
+        </Task>
+        <Task>
+            <Name>任务2：每天上午8点、下午14点（2分3秒），定时打开百度</Name>
+            <BactchFile>test.bat</BactchFile>
+            <TimingPolicy>
+                <BeginDate>2013-5-18 0:0:0</BeginDate>
+                <EndDate>2014-1-1 0:2:3</EndDate>
+                <Period>天</Period>
+                <ExecutePoints>8,14</ExecutePoints>
+            </TimingPolicy>
+        </Task>
+        <Task>
+            <Name>任务3：每周六、周日（晚8点），定时打开GitHub</Name>
+            <BactchFile>OpenGitHub.bat</BactchFile>
+            <TimingPolicy>
+                <BeginDate>2013-5-18 0:0:30</BeginDate>
+                <EndDate>2013-10-10 20:00:00</EndDate>
+                <Period>周</Period>
+                <ExecutePoints>0,6</ExecutePoints>
+            </TimingPolicy>
+        </Task>
+    </Project>
+
+</TaskConfig>

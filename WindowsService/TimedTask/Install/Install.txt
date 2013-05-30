@@ -1,0 +1,4 @@
+﻿C:\Windows\Microsoft.NET\Framework\v4.0.30319\InstallUtil.exe "D:\01.Work\glory\WindowsService\TimedTask\bin\Debug\WindowsService.exe"
+
+属性/登录/允许与桌面交互（勾选）
+禁用 <Interactive Services Detection服务>
