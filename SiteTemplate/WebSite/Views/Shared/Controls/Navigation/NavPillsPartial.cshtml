@@ -1,0 +1,12 @@
+﻿@{
+        // 一级列表
+}
+@model IEnumerable<LinkViewModel>
+<ul class="nav nav-pills">
+    @foreach (LinkViewModel link in Model)
+    {
+        string state = Enum.GetName(typeof(LinkState), link.State);
+        <li class="@state">
+            <a href="@link.Url">@link.Text</a></li>
+    }
+</ul>

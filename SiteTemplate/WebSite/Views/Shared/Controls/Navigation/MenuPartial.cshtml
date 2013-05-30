@@ -1,0 +1,23 @@
+﻿@using System.Xml;
+@model XmlNode
+<div class="navbar">
+    <div class="navbar-inner">
+        <ul class="nav">
+            @foreach (XmlNode node in Model.ChildNodes)
+            {
+                <li class="dropdown">
+                    @if (node.HasChildNodes)
+                    {
+                        <a data-toggle="dropdown" class="dropdown-toggle" href="#">@node.GetAttribute("title")
+                            <b class="caret"></b></a>
+                        @Html.RecursionDropDown(node)
+                    }
+                    else
+                    {
+                        <a href="@node.GetAttribute("url")">@node.GetAttribute("title")</a>
+                    }
+                </li>
+            }
+        </ul>
+    </div>
+</div>

@@ -1,0 +1,19 @@
+﻿@{
+                    // 一级列表
+}
+@model IEnumerable<LinkViewModel>
+<div class="navbar navbar-fixed-top">
+    <div class="navbar-inner">
+        <div class="container">
+            <a class="brand" href="#">组件Demo</a>
+            <ul class="nav">
+                @foreach (LinkViewModel link in Model)
+                {
+                    string state = Enum.GetName(typeof(LinkState), link.State);
+                    <li class="@state">
+                        <a href="@link.Url">@link.Text</a></li>
+                }
+            </ul>
+        </div>
+    </div>
+</div>

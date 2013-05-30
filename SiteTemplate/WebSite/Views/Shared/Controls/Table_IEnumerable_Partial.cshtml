@@ -1,0 +1,33 @@
+﻿@using System.Reflection;
+@using System.ComponentModel;
+@using System.Collections;
+@model IEnumerable
+@{
+    IEnumerable<PropertyInfo> propertyArray = Model.GetType().GetProperties()[2].PropertyType.GetProperties().Where(p => p.GetCustomAttributes(typeof(DisplayNameAttribute), true).Length > 0);
+    IEnumerable<string> dataColumns = propertyArray.Select(p => ((DisplayNameAttribute)p.GetCustomAttributes(typeof(DisplayNameAttribute), true)[0]).DisplayName);
+}
+<table>
+    <thead>
+        <tr>
+            @foreach (string column in dataColumns)
+            {
+                <th>
+                    @column
+                </th>
+            }
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (object row in Model)
+        {
+            <tr>
+                @foreach (PropertyInfo property in propertyArray)
+                {
+                    <td>
+                        @property.GetValue(row, null)
+                    </td>
+                }
+            </tr>
+        }
+    </tbody>
+</table>

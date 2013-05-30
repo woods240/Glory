@@ -1,0 +1,18 @@
+﻿@model NoticeViewModel
+<div id="noticeDialog" class="modal hide fade in">
+    <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+        <h3>系统公告（@Model.NoticeTime.ToString()）</h3>
+    </div>
+    <div class="modal-body">
+        <p>@Model.NoticeContent</p>
+    </div>
+    <div class="modal-footer">
+        <a href="#" class="btn" data-dismiss="modal" aria-hidden="true">我知道了</a>
+    </div>
+</div>
+<script type="text/javascript">
+    $(function () {
+        $('#noticeDialog').modal({ show: true, backdrop: 'static', keyboard: false });
+    });
+</script>

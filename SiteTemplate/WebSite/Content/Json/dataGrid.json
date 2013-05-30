@@ -1,0 +1,12 @@
+﻿{
+    "columnTitles": {
+        "name": "姓名（中文）",
+        "age": "年龄（周岁）"
+    },
+    "records": [
+        { "name": "胡明明", "age": 28 },
+        { "name": "刘春阳", "age": 26 },
+        { "name": "胡阳", "age": 0 }
+    ],
+    "record_total": 150
+}

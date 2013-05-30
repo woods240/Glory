@@ -1,0 +1,26 @@
+﻿/* 排版 */
+.container(-fluid)：限制宽度
+.row(-fluid)：排版容器，相当于行
+.spanN：排版元素，相当于单元格
+.pull-left .pull-right：对齐
+
+/* 导航 */
+.nav 
+.nav-tabs
+.nav-pills
+.nav-list .nav-header
+.nav-stacked
+
+/* 按钮 */
+.btn
+.btn-primary
+.btn-info
+.btn-success
+.btn-warning
+.btn-danger
+.btn-inverse
+.btn-link
+
+.btn-mini
+.btn-small
+.btn-large

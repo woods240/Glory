@@ -1,0 +1,15 @@
+﻿@model List<LinkViewModel>
+<ul class="breadcrumb">
+    @foreach (LinkViewModel link in Model)
+    {
+        bool isLastOne = (link == Model.Last());
+        if (isLastOne)
+        {
+        <li class="active">@link.Text</li>
+        }
+        else
+        {
+        <li class="active">@link.Text<span class="divider">/</span></li>
+        }
+    }
+</ul>

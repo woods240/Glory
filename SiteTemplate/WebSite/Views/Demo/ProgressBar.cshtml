@@ -1,0 +1,65 @@
+﻿@{
+    ViewBag.Title = "进度条";
+    Layout = "~/Views/Shared/_Layout_NavigationDemo.cshtml";
+}
+<button id="start">
+    开始</button>
+<button id="pause">
+    暂停</button>
+<button id="half">
+    50%</button>
+<button id="threeQuarter">
+    3/4</button>
+<button id="goOn">
+    继续</button>
+<button id="complete">
+    完成</button>
+<div class="demo">
+    <h4>
+        进度条演示</h4>
+    <p>
+        进度条将指定容器遮盖，<br />
+        然后用10s时间，<br />
+        行进到95%
+    </p>
+</div>
+@section script{
+    <script src="/Scripts/Controls/jquery.progress.js" type="text/javascript"></script>
+    <script type="text/javascript">
+        $(function () {
+            // (为容器)创建进度条
+            var progressBar = $('div.demo').progressBar({ step: 1, maxPercent: 98, interval: 100 });
+
+            // 开始
+            $('#start').on('click', function () {
+                progressBar.progressBar('start');
+            });
+
+            // 暂停
+            $('#pause').on('click', function () {
+                progressBar.progressBar('pause');
+            });
+
+            // 到50%
+            $('#half').on('click', function () {
+                progressBar.progressBar(50);
+            });
+
+            // 到3/4
+            $('#threeQuarter').on('click', function () {
+                progressBar.progressBar({ percent: 75, text: '3/4' });
+            });
+
+            // 继续
+            $('#goOn').on('click', function () {
+                progressBar.progressBar('goOn');
+            });
+
+            // 完成
+            $('#complete').on('click', function () {
+                progressBar.progressBar('complete');
+            });
+        });
+        
+    </script>
+}

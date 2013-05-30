@@ -1,0 +1,20 @@
+﻿@{
+        // 两级列表
+}
+@model Dictionary<string, List<LinkViewModel>>
+<ul class="nav nav-list">
+    @foreach (KeyValuePair<string, List<LinkViewModel>> groupNode in Model)
+    {
+        if (!string.IsNullOrEmpty(groupNode.Key))
+        {
+        <li class="nav-header">@groupNode.Key</li>
+        }
+
+        foreach (LinkViewModel link in groupNode.Value)
+        {
+            string state = Enum.GetName(typeof(LinkState), link.State);
+        <li class="@state">
+            <a href="@link.Url">@link.Text</a></li>
+        }
+    }
+</ul>

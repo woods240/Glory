@@ -1,0 +1,29 @@
+﻿@{
+    ViewBag.Title = "DataGrid";
+    Layout = "~/Views/Shared/_Layout_NavigationDemo.cshtml";
+}
+<table class="table table-bordered table-condensed table-hover">
+    <thead>
+        <tr class="column_title">
+        </tr>
+    </thead>
+    <tbody>
+    </tbody>
+    <tfoot>
+        <td class="paging">
+            <div>
+                每页<span class="page_size"></span>条, 第<span class="page_index"></span>/<span class="page_total"></span>页,
+                共<span class="record_total"></span>条记录
+            </div>
+            <div>
+                <a href="#" class="lastPage" page="">上一页</a> <a href="#" class="nextPage" page="">下一页</a>
+            </div>
+        </td>
+    </tfoot>
+</table>
+@section script{
+    <script src="/Scripts/Controls/jquery.datagrid.js" type="text/javascript"></script>
+    <script type="text/javascript">
+        $('table.table').dataGrid({ pageSize: 5, dataUrl: '/Content/Json/dataGrid.json' });
+    </script>
+}

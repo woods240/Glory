@@ -1,0 +1,6 @@
+﻿1.访问网站的DOS命令:
+start www.baidu.com
+
+2.定时任务:
+a) windows 计划任务
+b) windows service

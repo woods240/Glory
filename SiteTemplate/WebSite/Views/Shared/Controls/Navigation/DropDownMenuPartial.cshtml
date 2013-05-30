@@ -1,0 +1,21 @@
+﻿@{
+        // 一级列表
+        // 必须放置在 position: relative 的容器中，比如 .dropdown 中
+        // 否则，不显示
+}
+@model IEnumerable<LinkViewModel>
+<ul class="dropdown-menu">
+    @foreach (LinkViewModel link in Model)
+    {
+        string state = Enum.GetName(typeof(LinkState), link.State);
+        if (!string.IsNullOrEmpty(link.Text))
+        {
+        <li>
+            <a href="@link.Url">@link.Text</a></li>
+        }
+        else
+        {
+        <li class="divider"></li> 
+        }
+    }
+</ul>

@@ -1,0 +1,75 @@
+﻿@{
+    ViewBag.Title = "DropDownMenu";
+    Layout = "~/Views/Shared/_Layout_NavigationDemo.cshtml";
+}
+@{
+    IEnumerable<LinkViewModel> mockData = new List<LinkViewModel>{
+        new LinkViewModel{ Text="百度", Url="http://www.baidu.com"},
+        new LinkViewModel{ Text="谷歌", Url="http://www.google.com"},
+        new LinkViewModel{ Text="搜狐", Url="http://www.sohu.com"},
+        new LinkViewModel{ Text="", Url=""},
+        new LinkViewModel{ Text="腾讯", Url="http://www.qq.com"}
+    };
+    
+}
+
+<div class="row-fluid" style="margin-top: 100px;">
+    <div class="span4">
+        <h5>
+            按钮下拉菜单</h5>
+        <div class="btn-group">
+            <button class="btn btn-info dropdown-toggle" data-toggle="dropdown">搜索网站 <b class="caret">
+            </b></button>
+            @Html.Partial("~/Views/Shared/Controls/Navigation/DropDownMenuPartial.cshtml", mockData)
+        </div>
+    </div>
+    <div class="span4">
+        <h5>
+            分裂式按钮下拉菜单</h5>
+        <div class="btn-group">
+            <button class="btn btn-danger">搜索网站</button>
+            <button class="btn btn-danger dropdown-toggle" data-toggle="dropdown"><b class="caret">
+            </b></button>
+            @Html.Partial("~/Views/Shared/Controls/Navigation/DropDownMenuPartial.cshtml", mockData)
+        </div>
+    </div>
+    <div class="span4">
+        <h5>
+            向上弹出式菜单</h5>
+        <div class="btn-group dropup">
+            <button class="btn btn-success">搜索网站</button>
+            <button class="btn btn-success dropdown-toggle" data-toggle="dropdown"><b class="caret">
+            </b></button>
+            @Html.Partial("~/Views/Shared/Controls/Navigation/DropDownMenuPartial.cshtml", mockData)
+        </div>
+    </div>
+</div>
+<div class="row-fluid" style="margin-top: 100px;">
+    <div class="span4">
+        <h5>
+            超链接下拉菜单</h5>
+        <div class="dropdown">
+            <a class="dropdown-toggle" data-toggle="dropdown" href="#">搜索网站</a>
+            @Html.Partial("~/Views/Shared/Controls/Navigation/DropDownMenuPartial.cshtml", mockData)
+        </div>
+    </div>
+    <div class="span4">
+        <h5>
+            静态智能提示下拉菜单
+        </h5>
+        <input data-provide="typeahead" data-source=["a","ab","abc","abcd"] type="text" value="">
+    </div>
+    <div class="span4">
+        <h5>
+            动态智能提示下拉菜单
+        </h5>
+        <input id="test" data-provide="typeahead" type="text" value="">
+    </div>
+</div>
+
+@section script{
+<script type="text/javascript">
+    var data = '["a", "ab", "abc", "abcd"]';
+    $("#test").attr('data-source', data);
+</script>
+}

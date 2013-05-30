@@ -1,0 +1,37 @@
+﻿@using System.IO;
+@using System.Text;
+@using FlexCel.Core;
+@using FlexCel.Render;
+@using FlexCel.XlsAdapter;
+@model ExcelDisplayViewModel
+@{
+    Layout = null;
+
+    // 读取Excel文件内容，并生成Html的逻辑
+    FlexCelHtmlExport flexCelHtmlExport = new FlexCelHtmlExport();
+    flexCelHtmlExport.Workbook = new XlsFile();
+    flexCelHtmlExport.Workbook.Open(Model.FilePhysicalPath);
+    if (!string.IsNullOrEmpty(Model.SheetName))
+    {
+        flexCelHtmlExport.Workbook.ActiveSheetByName = Model.SheetName;
+    }
+    flexCelHtmlExport.HtmlFileFormat = THtmlFileFormat.Html;
+    flexCelHtmlExport.AllowOverwritingFiles = true;
+    flexCelHtmlExport.SavedImagesFormat = THtmlImageFormat.Png;
+    flexCelHtmlExport.HtmlVersion = THtmlVersion.Html_401;
+    flexCelHtmlExport.FixIE6TransparentPngSupport = true;
+    flexCelHtmlExport.FixIE6WordWrapSupport = true;
+    flexCelHtmlExport.ExtraInfo.Title = Model.Title;
+    flexCelHtmlExport.ExtraInfo.HeadEnd = new string[] { "<script src=\"/Scripts/jquery-1.9.1.min.js\" type=\"text/javascript\"></script>" };
+    flexCelHtmlExport.ExtraInfo.BodyStart = new string[] { Model.BodyStartHtml };
+    string onLoadScript = "<script type=\"text/javascript\">$(function () { $('img').each(function () { this.src = '"
+        + SysContext.Config.TempDirectory_Virtual + "' + $(this).attr('src'); }); " + Model.BodyEndJavascript + " });</script>";
+    flexCelHtmlExport.ExtraInfo.BodyEnd = new string[] { onLoadScript };
+    StringBuilder sb = new StringBuilder();
+    using (TextWriter html = new StringWriter(sb))
+    {
+        flexCelHtmlExport.Export(html, flexCelHtmlExport.Workbook.ActiveFileName, null);
+    }
+    string htmlString = sb.ToString();
+}
+@MvcHtmlString.Create(htmlString)

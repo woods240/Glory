@@ -1,0 +1,30 @@
+﻿@using System.Xml;
+@model IEnumerable<string>
+@foreach (string file in Model)
+{
+    XmlDocument xmlDoc = new XmlDocument();
+    xmlDoc.Load(file);
+    XmlNode titleNode = xmlDoc.SelectSingleNode("/UpgradeLog/Title");   // 升级日志标题
+    XmlNode contentNode = xmlDoc.SelectSingleNode("/UpgradeLog/Content");   // 升级日志内容
+    <div class="upgradeLog">
+        <h4>
+            <img src="/FavIcon.ico" />
+            @foreach (XmlNode node in titleNode.ChildNodes)
+            {
+                <span>@node.InnerText</span>
+            }
+        </h4>
+        @foreach (XmlNode node in contentNode.ChildNodes)
+        {
+            XmlElement element = node as XmlElement;
+            string definitionTitle = element.GetAttribute("title");
+            <dl>
+                <dt>@definitionTitle</dt>
+                @foreach (XmlNode childNode in node.ChildNodes)
+                {
+                    <dd>@childNode.InnerText</dd>
+                }
+            </dl>
+        }
+    </div>
+}
