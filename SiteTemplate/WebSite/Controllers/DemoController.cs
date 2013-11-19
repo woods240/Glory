@@ -168,9 +168,9 @@ namespace WebSite.Controllers
             dataSource.Tables.Add(标题表);
 
             // 数据表
-            using (ExcelReader excelReader = new ExcelReader(SysContext.Config.ReportTemplateDirectory_Physical + "测试模板.xlsx", "哈哈", true))
+            using (ExcelReader excelReader = new ExcelReader(SysContext.Config.ReportTemplateDirectory_Physical + "测试模板.xlsx", true))
             {
-                List<DynamicExcelDataViewModel> modelList = excelReader.Read<DynamicExcelDataViewModel>();
+                List<DynamicExcelDataViewModel> modelList = excelReader.Read<DynamicExcelDataViewModel>("哈哈");
                 DataTable 数据表 = FormatConverter.ListToDataTable<DynamicExcelDataViewModel>(modelList,
                     (p => p.GetCustomAttributes(typeof(DisplayNameAttribute), true).Length > 0));
                 数据表.TableName = "数据表";
@@ -224,9 +224,9 @@ namespace WebSite.Controllers
             string filePhysicalPath = SysContext.Config.ReportTemplateDirectory_Physical + "测试模板.xlsx";
             string sheetName = "哈哈";
             bool hasTitle = true;
-            using (ExcelReader excelReader = new ExcelReader(filePhysicalPath, sheetName, hasTitle))
+            using (ExcelReader excelReader = new ExcelReader(filePhysicalPath, hasTitle))
             {
-                modelList = excelReader.Read<ExcelDataViewModel>();
+                modelList = excelReader.Read<ExcelDataViewModel>(sheetName);
             }
 
             DataTable dataTable = FormatConverter.ListToDataTable<ExcelDataViewModel>(

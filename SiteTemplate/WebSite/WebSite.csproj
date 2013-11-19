@@ -67,6 +67,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Binders\UserContextBinder.cs" />
+    <Compile Include="Component\ExcelInterpreter.cs" />
     <Compile Include="Component\ExcelReader.cs" />
     <Compile Include="Component\ExcelReport_Dynamic.cs" />
     <Compile Include="Component\ExcelWriter.cs" />

@@ -1,12 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-using FlexCel.XlsAdapter;
-using FlexCel.Core;
-using System.Data;
-using System.Reflection;
 using System.ComponentModel;
+using System.Linq;
+using System.Reflection;
+using FlexCel.Core;
+using FlexCel.XlsAdapter;
 
 namespace WebSite
 {
@@ -15,74 +13,65 @@ namespace WebSite
     /// </summary>
     public class ExcelReader : IDisposable
     {
-        public string FilePhysicalPath { get; private set; }
-        public string SheetName { get; private set; }
-        public bool HasTitle { get; private set; }
+        private XlsFile _xls = new XlsFile(false);
+        private string _filePath;
+        private bool _hasTitle;
 
-        private XlsFile xls;
-
-        public IEnumerable<CellValue> CellValueCollection { get; private set; }
-        public int MinRowIndex { get { return CellValueCollection.Min(c => c.Row); } }
-        public int MaxRowIndex { get { return CellValueCollection.Max(c => c.Row); } }
-        public int MinColIndex { get { return CellValueCollection.Min(c => c.Col); } }
-        public int MaxColIndex { get { return CellValueCollection.Max(c => c.Col); } }
-        public int ColumnRowIndex { get { return HasTitle ? (MinRowIndex + 1) : MinRowIndex; } }
-        public int DataRowIndex { get { return ColumnRowIndex + 1; } }
-
-        public ExcelReader(string filePhysicalPath, string sheetName, bool hasTitle)
+        public ExcelReader(string filePath, bool hasTitle = false)
         {
-            FilePhysicalPath = filePhysicalPath;
-            SheetName = sheetName;
-            HasTitle = hasTitle;
-
-            xls = new XlsFile(false);
-            xls.Open(FilePhysicalPath);
-            ChangeSheet(SheetName);
+            _filePath = filePath;
+            _hasTitle = hasTitle;
         }
 
         /// <summary>
-        /// 切换标签页
+        /// 读取标签页的内容
         /// </summary>
-        public void ChangeSheet(string sheetName)
+        public IEnumerable<CellValue> Read(string sheetName)
         {
-            SheetName = sheetName;
-            xls.ActiveSheetByName = SheetName;
-            CellValueCollection = xls.AsEnumerable();
+            _xls.Open(_filePath);
+            _xls.ActiveSheetByName = sheetName;
+
+            return _xls.ToList();
         }
 
         /// <summary>
-        /// 读取报表标题（通常在[第一行，第一列]）
+        /// 将Excel中的“数据表”部分，反序列化成对象集合
         /// </summary>
-        /// <returns>报表标题</returns>
-        public string GetExcelTitle()
+        /// <typeparam name="T">对象类型</typeparam>
+        /// <param name="sheetName">标签页名称</param>
+        /// <param name="mapPropertyToColumnTitle">对象属性和列标题的映射关系</param>
+        /// <returns>对象集合</returns>
+        public List<T> Read<T>(string sheetName, Func<PropertyInfo, string> mapPropertyToColumnTitle) where T : class, new()
         {
-            if (!HasTitle) return string.Empty;
+            // 1.读取Excel单元格内容
+            IEnumerable<CellValue> cells = Read(sheetName);
+            int minRowIndex = cells.Min(c => c.Row);
+            int maxRowIndex = cells.Max(c => c.Row);
+            int minColIndex = cells.Min(c => c.Col);
+            int maxColIndex = cells.Max(c => c.Col);
+            int columnRowIndex = _hasTitle ? (minRowIndex + 1) : minRowIndex;
+            int minDataRowIndex = columnRowIndex + 1;
 
-            int titleRowIndex = MinRowIndex; // 标题行
-            return CellValueCollection.FirstOrDefault(c => c.Row == MinRowIndex && c.Col == MinColIndex).Value.ToString();
-        }
+            // 2.确定类中的哪些属性将被映射
+            PropertyInfo[] propertyArray = GetPropertyArrayToMap<T>(mapPropertyToColumnTitle);
 
-        /// <summary>
-        /// 将Excel中的“数据表”部分，读取到泛型集合中
-        /// </summary>
-        /// <typeparam name="T">集合元素的类型</typeparam>
-        /// <returns>泛型集合</returns>
-        public List<T> Read<T>() where T : class, new()
-        {
-            // 属性集合
-            IEnumerable<PropertyInfo> propertyArray = typeof(T).GetProperties().Where(p => p.GetCustomAttributes(typeof(DisplayNameAttribute), true).Length > 0);
+            // 3.建立 [属性,Excel列号] 的映射关系
+            CellValue[] columnTitleCellsArray = cells.Where(c => c.Row == columnRowIndex).ToArray();
+            Dictionary<string, int> columnTitleMapperDictionary = GetColumnTitleToColDictionary(columnTitleCellsArray);
+            Dictionary<PropertyInfo, int> mapperDictionary = GetPropertyToColDictionary(propertyArray, columnTitleMapperDictionary, mapPropertyToColumnTitle);
 
-            // 列标题集合
-            List<CellValue> columnTitleCells = CellValueCollection.Where(c => c.Row == ColumnRowIndex).ToList();
-
-            // 遍历数据行
+            // 4.遍历数据行,将每一行数据映射为一个对象
+            IGrouping<int, CellValue>[] recordCellsArray = cells.GroupBy(c => c.Row).Where(g => g.Key >= minDataRowIndex).ToArray();
             List<T> modelList = new List<T>();
-            for (int rowIndex = DataRowIndex; rowIndex <= MaxRowIndex; rowIndex++)
+            foreach (IGrouping<int, CellValue> recordCells in recordCellsArray)
             {
                 object model = Activator.CreateInstance(typeof(T));
                 foreach (PropertyInfo property in propertyArray)
                 {
-                    SetPropertyValue(model, property, rowIndex, columnTitleCells);
+                    CellValue cell = recordCells.FirstOrDefault(c => c.Col == mapperDictionary[property]);
+                    object value = cell == null ? null : cell.Value;
+
+                    SetPropertyValue(model, property, value);
                 }
                 modelList.Add(model as T);
             }
@@ -90,29 +79,75 @@ namespace WebSite
             return modelList;
         }
 
-        private void SetPropertyValue(object model, PropertyInfo property, int rowIndex, List<CellValue> columnTitleCells)
+        /// <summary>
+        /// 将Excel中的“数据表”部分，反序列化成对象集合
+        /// 默认映射关系："对象属性的DisplayName" -> "列标题"
+        /// </summary>
+        /// <typeparam name="T">对象类型</typeparam>
+        /// <param name="sheetName">标签页名称</param>
+        /// <returns>对象集合</returns>
+        public List<T> Read<T>(string sheetName) where T : class, new()
         {
-            // DisplayName -> columnTitle -> columnIndex
-            object[] attributes = property.GetCustomAttributes(typeof(DisplayNameAttribute), true);
-            string displayName = ((DisplayNameAttribute)attributes[0]).DisplayName;
-            CellValue cell = columnTitleCells.FirstOrDefault(c => c.Value.ToString().Equals(displayName));
-            if (cell == null) return;
-            int colIndex = cell.Col;
+            Func<PropertyInfo, string> MapPropertyToColumnTitle = property =>
+            {
+                object[] attributes = property.GetCustomAttributes(typeof(DisplayNameAttribute), true);
+                return attributes.Count() > 0
+                    ? ((DisplayNameAttribute)attributes[0]).DisplayName
+                    : string.Empty;
+            };
 
-            // 查找对应单元格的数据
-            object value = CellValueCollection.FirstOrDefault(c => c.Row == rowIndex && c.Col == colIndex).Value;
+            return Read<T>(sheetName, MapPropertyToColumnTitle);
+        }
 
-            // 格式转换
-            object propertyValue = null;
+        private PropertyInfo[] GetPropertyArrayToMap<T>(Func<PropertyInfo, string> mapPropertyToColumnTitle)
+        {
+            return typeof(T).GetProperties().Where(p => p.CanWrite && !string.IsNullOrEmpty(mapPropertyToColumnTitle(p))).ToArray();
+        }
+        private void SetPropertyValue(object model, PropertyInfo property, object value)
+        {
+            object propertyValue;
             if (property.PropertyType == typeof(Guid))
             {
-                propertyValue = new Guid(value.ToString());
+                propertyValue = value == null ? Guid.Empty : new Guid(value.ToString());
             }
             else
             {
                 propertyValue = Convert.ChangeType(value, property.PropertyType);
             }
             property.SetValue(model, propertyValue, null);
+        }
+
+        private Dictionary<PropertyInfo, int> GetPropertyToColDictionary(PropertyInfo[] propertyArray, Dictionary<string, int> columnTitleMapperDictionary, Func<PropertyInfo, string> MapPropertyToColumnTitle)
+        {
+            Dictionary<PropertyInfo, int> mapperDictionary = new Dictionary<PropertyInfo, int>();
+
+            foreach (PropertyInfo property in propertyArray)
+            {
+                string columnTitle = MapPropertyToColumnTitle(property);
+
+                int col = 0;
+                if (columnTitleMapperDictionary.Keys.Contains(columnTitle))
+                {
+                    col = columnTitleMapperDictionary[columnTitle];
+                }
+                mapperDictionary.Add(property, col);
+            }
+
+            return mapperDictionary;
+        }
+        private Dictionary<string, int> GetColumnTitleToColDictionary(CellValue[] columnTitleCellsArray)
+        {
+            Dictionary<string, int> columnTitleMapperDictionary = new Dictionary<string, int>();
+
+            foreach (CellValue cell in columnTitleCellsArray)
+            {
+                if (cell.Value != null)
+                {
+                    columnTitleMapperDictionary.Add(cell.Value.ToString().Trim(), cell.Col);
+                }
+            }
+
+            return columnTitleMapperDictionary;
         }
 
 
@@ -130,10 +165,12 @@ namespace WebSite
                 if (disposing)
                 {
                     // 释放托管资源  
-                    CellValueCollection = null;
-                    xls = null;
+                    _filePath = null;
                 }
-                // 释放非托管资源  
+
+                // 释放非托管资源 
+                _xls = null;
+
             }
             _disposed = true;
         }
