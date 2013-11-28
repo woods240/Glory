@@ -14,27 +14,19 @@ namespace WebSite
     public static class FormatConverter
     {
 
-        public static DataTable ListToDataTable<T>(IEnumerable<T> list, Func<PropertyInfo, bool> propertyFilter, bool useDisplayName = false) where T : class, new()
+        public static DataTable ListToDataTable<T>(IEnumerable<T> list, Func<PropertyInfo, string> mapPropertyToColumnTitle) where T : class, new()
         {
             // 筛选泛型类的属性
-            PropertyInfo[] propertyArray = typeof(T).GetProperties();
-            IEnumerable<PropertyInfo> requiredProperties = propertyArray.Where(propertyFilter);
+            PropertyInfo[] requiredProperties = typeof(T).GetProperties().Where(p => p.CanRead && !string.IsNullOrEmpty(mapPropertyToColumnTitle(p))).ToArray();
+            Dictionary<PropertyInfo, string> propertyToColumnTitleDictionary = new Dictionary<PropertyInfo, string>();
 
             // 构造Table的结构
             DataTable dataTable = new DataTable();
             foreach (PropertyInfo property in requiredProperties)
             {
-                string columnName = property.Name;
-                if (useDisplayName)
-                {
-                    string displayName = MetadataReader.GetDisplayName(property);
-                    if (!string.IsNullOrEmpty(displayName))
-                    {
-                        columnName = displayName;
-                    }
-                }
-
+                string columnName = mapPropertyToColumnTitle(property);
                 dataTable.Columns.Add(columnName, property.PropertyType);
+                propertyToColumnTitleDictionary.Add(property, columnName);
             }
 
             // 向Table添加数据
@@ -45,16 +37,7 @@ namespace WebSite
 
                 foreach (PropertyInfo property in requiredProperties)
                 {
-                    string columnName = property.Name;
-                    if (useDisplayName)
-                    {
-                        string displayName = MetadataReader.GetDisplayName(property);
-                        if (!string.IsNullOrEmpty(displayName))
-                        {
-                            columnName = displayName;
-                        }
-                    }
-
+                    string columnName = propertyToColumnTitleDictionary[property];
                     object propertyValue = property.GetValue(model, null);
                     row[columnName] = propertyValue;
                 }
@@ -62,7 +45,7 @@ namespace WebSite
 
             return dataTable;
         }
-    
-    
+
+
     }
 }

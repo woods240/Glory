@@ -37,7 +37,7 @@ namespace WebSite.Controllers
         {
             AuthCode auCode = new AuthCode(4);
             string strCode = auCode.GetRandomCode();
-            Session[SysContext.ConstKeys.Session_AuthCode] = strCode;
+            Session[ConstKeys.Session_AuthCode] = strCode;
             byte[] imageByte = auCode.CreateJpegImage(strCode);
 
             return File(imageByte, @"image/jpeg");
@@ -59,7 +59,7 @@ namespace WebSite.Controllers
             }
 
             // 2.获取客户端公告标识
-            string clientNoticeFile = Request.Cookies[SysContext.ConstKeys.Cookie_Notice] != null ? Request.Cookies[SysContext.ConstKeys.Cookie_Notice].Value : string.Empty;
+            string clientNoticeFile = Request.Cookies[ConstKeys.Cookie_Notice] != null ? Request.Cookies[ConstKeys.Cookie_Notice].Value : string.Empty;
             if (serverNoticeFile == clientNoticeFile)
             {
                 return null;
@@ -71,7 +71,7 @@ namespace WebSite.Controllers
             model.NoticeContent = System.IO.File.ReadAllText(serverNoticeFile);
 
             // 4.更新客户端公告标识
-            HttpCookie noticeCookie = new HttpCookie(SysContext.ConstKeys.Cookie_Notice, serverNoticeFile);
+            HttpCookie noticeCookie = new HttpCookie(ConstKeys.Cookie_Notice, serverNoticeFile);
             noticeCookie.HttpOnly = true;
             noticeCookie.Expires = DateTime.Now.AddDays(3); // 公告保留时间
             Response.Cookies.Add(noticeCookie);

@@ -27,7 +27,7 @@ namespace WebSite
         protected override bool AuthorizeCore(HttpContextBase httpContext)
         {
             // 1.Session过期，不予授权
-            if (httpContext == null || httpContext.Session[SysContext.ConstKeys.Session_UserContext] == null)
+            if (httpContext == null || httpContext.Session[ConstKeys.Session_UserContext] == null)
             {
                 return false;
             }

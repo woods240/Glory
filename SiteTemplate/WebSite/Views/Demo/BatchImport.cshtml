@@ -1,0 +1,43 @@
+﻿@{
+    ViewBag.Title = "BatchImport";
+    Layout = "~/Views/Shared/_Layout_NavigationDemo.cshtml";
+}
+<h2>
+    例子：
+    <a target="_blank" href="/Demo/BatchImportDemo">BatchImportDemo</a></h2>
+<dl>
+    <dt>批量处理：通过Excel文件向系统输入多条数据，系统对这些数据做同样的处理</dt>
+    <dd>"~/Views/BatchImport/Index.cshtml"（通用页面）
+        <ul>
+            <li>该View定义了批量处理界面的通用外观，是BatchImportViewModel的皮肤</li>
+            <li>BatchImportViewModel：负责定义模版信息、上传信息</li>
+            <li>模版信息：模版路径、下载名称、标签页名称</li>
+            <li>上传信息：负责处理上传的Action、要传递的数据、对上传的限制</li>
+        </ul>
+    </dd>
+    <dd>BatchImportController&lt;T&gt;（批量处理的Controller基类）
+        <ul>
+            <li>该Controller定义了批量处理的主要流程：保存上传文件、读取上传文件、批量处理</li>
+            <li>保存上传文件：由UploadFileManager负责管理所有上传文件</li>
+            <li>读取上传文件：由ExcelInterpreter负责解释Excel中的数据</li>
+            <li>批量处理：由用户自定义对List&lt;T&gt;的操作</li>
+        </ul>
+    </dd>
+    <dd>ExcelInterpreter（Excel解释器的基类）
+        <ul>
+            <li>该class定义了解释Excel数据必须的步骤：读取单元格内容、模版格式验证、数据正确性验证、数据重复性验证、将错误信息标记回文件、将记录转换为实体</li>
+            <li>读取单元格内容：由ExcelReader负责读取单元格内容</li>
+            <li>模版格式验证：由子类定义应包含的所有字段，基类自行检查Excel标题列是否齐全、是否包含数据</li>
+            <li>数据正确性验证：由子类定义数据正确性验证规则，基类使用该规则对数据进行逐条检查</li>
+            <li>数据重复性验证：基类提供辅助方法、由子类定义数据重复性验证规则，基类使用该规则对所有数据进行重复性检查</li>
+            <li>将错误信息标记回文件：有ExcelWriter负责将错误信息标注到上传文件中</li>
+            <li>将记录转换为实体：使用者定义[属性,字段]的映射规则，基类使用该规则将所有数据影射成List&lt;T&gt;</li>
+        </ul>
+    </dd>
+    <dd>做一个新的批量处理功能时，在复用以上组件的基础上，只需要一下两个步骤
+        <ul>
+            <li>定义具体的批量处理Controller，继承自BatchImportController&lt;T&gt;</li>
+            <li>定义具体的Excel解释器，继承自ExcelInterpreter</li>
+        </ul>
+    </dd>
+</dl>

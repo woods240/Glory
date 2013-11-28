@@ -12,6 +12,9 @@
                 <siteMapNode url="/Demo/AddCommentToExcel" title="添加批注" description="3" />
                 <siteMapNode url="/Demo/ClearCommentInExcel" title="清除批注" description="3" />
             </siteMapNode>
+            <siteMapNode title="Excel导入" description="2">
+                <siteMapNode url="/Demo/BatchImport" title="批量导入" description="3" />
+            </siteMapNode>
         </siteMapNode>
         <siteMapNode title="站点地图" description="1">
             <siteMapNode url="/Demo/ReadSiteMap" title="读取XmlSiteMap" description="2" />

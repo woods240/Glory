@@ -1,0 +1,59 @@
+﻿@model BatchImportViewModel
+@{
+    Model.UploadSettings.FileSizeLimit = 1.5;
+    Model.UploadSettings.FileTypeDesc = "Excel文件";
+    Model.UploadSettings.FileTypeExts = "*.xls;*.xlsx";
+    Model.UploadSettings.OnUploadSuccess = "uploadSuccess(dataObj);";
+    Model.UploadSettings.OnSelect = "onSelected()";
+}
+<h5>
+    @Model.Title
+</h5>
+<ol>
+    <li><span>获取excel导入模板(标准模板)，并填写内容</span>
+        <ul>
+            <li>
+                <a href="@SysContext.CommonService.GetDownloadLink(Model.TemplatePath, Model.TemplateDownloadName)">
+                    <strong>@Model.TemplateDownloadName</strong></a>（右键，目标另存为）</li>
+            <li>请将新增设备仪器相关信息录入标准模板</li>
+        </ul>
+    </li>
+    <li><span>上传Excel格式文件</span>
+        <ul>
+            <li>将上一步生成的Excel文件上传到服务器</li>
+            <li>@Html.Partial("~/Views/Shared/Controls/UploadPartial.cshtml", Model.UploadSettings)</li>
+        </ul>
+    </li>
+    <li id="errorTip" style="display: none">
+        <h3 class="text-error">
+            文件内容有误，请<a target="_blank">下载此文件</a>，根据提示信息进行修正</h3>
+    </li>
+</ol>
+<script type="text/javascript">
+    function uploadSuccess(dataObj) {
+        switch (dataObj.StatusCode) {
+            case 0:
+                alert('上传失败,请重新上传');
+                break;
+            case 1:
+                $('#errorTip').show().find('a').attr('href', dataObj.ErrorFilePath);
+                break;
+            case 2:
+                alert('批量处理失败,请稍后重试');
+                break;
+            case 3:
+                alert('成功处理了' + dataObj.SuccessRecordCount + '条数据');
+                break;
+        }
+    }
+
+    function onSelected() {
+        $('#errorTip').hide();
+    }
+
+    $(function () {
+        $('#errorTip').find('a').on('click', function () {
+            $('#errorTip').hide();
+        });
+    });
+</script>

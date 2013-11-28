@@ -53,7 +53,7 @@ namespace WebSite
         /// <returns>是否一致</returns>
         public bool ValidateAuthCode(string authCode)
         {
-            if (HttpContext.Current.Session[SysContext.ConstKeys.Session_AuthCode] != null && HttpContext.Current.Session[SysContext.ConstKeys.Session_AuthCode].ToString() == authCode)
+            if (HttpContext.Current.Session[ConstKeys.Session_AuthCode] != null && HttpContext.Current.Session[ConstKeys.Session_AuthCode].ToString() == authCode)
             {
                 return true;
             }

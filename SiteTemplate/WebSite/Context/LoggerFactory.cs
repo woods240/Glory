@@ -8,6 +8,7 @@ namespace WebSite
 {
     /// <summary>
     /// 日志记录器
+    /// (所有的日志，都通过这里创建的Logger来记录)
     /// </summary>
     public class LoggerFactory
     {

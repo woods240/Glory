@@ -6,7 +6,7 @@ namespace WebSite
     {
         public object BindModel(ControllerContext controllerContext, ModelBindingContext bindingContext)
         {
-            return controllerContext.HttpContext.Session[SysContext.ConstKeys.Session_UserContext] as UserContext;
+            return controllerContext.HttpContext.Session[ConstKeys.Session_UserContext] as UserContext;
         }
     }
 }

@@ -7,38 +7,22 @@ namespace WebSite
 {
     /// <summary>
     /// 键名集合
+    /// (所有键值对，“对应的键”全部在这里定义)
     /// </summary>
     public class ConstKeys
     {
         // Application
-        public string Application_NavigationNode
-        {
-            get { return "NavigationNode"; }
-        }
+        public const string Application_NavigationNode = "NavigationNode";
 
         // Session
-        public string Session_UserContext
-        {
-            get { return "UserContext"; }
-        }
-        public string Session_AuthCode
-        {
-            get { return "AuthCode"; }
-        }
+        public const string Session_UserContext = "UserContext";
+        public const string Session_AuthCode = "AuthCode";
 
-        public string Cookie_Notice
-        {
-            get { return "Notice"; }
-        }
+        // Cookie
+        public const string Cookie_Notice = "Notice";
 
         // TempData
-        public string TempData_ErrorMsg
-        {
-            get { return "ErrorMsg"; }
-        }
-        public string TempData_AlertMsg
-        {
-            get { return "AlertMsg"; }
-        }
+        public const string TempData_ErrorMsg = "ErrorMsg";
+        public const string TempData_AlertMsg = "AlertMsg";
     }
 }

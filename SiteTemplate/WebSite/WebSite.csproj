@@ -67,10 +67,11 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Binders\UserContextBinder.cs" />
-    <Compile Include="Component\ExcelInterpreter.cs" />
-    <Compile Include="Component\ExcelReader.cs" />
-    <Compile Include="Component\ExcelReport_Dynamic.cs" />
-    <Compile Include="Component\ExcelWriter.cs" />
+    <Compile Include="Component\Excel\ExcelInterpreter.cs" />
+    <Compile Include="Component\Excel\ExcelReader.cs" />
+    <Compile Include="Component\Excel\ExcelReport_Dynamic.cs" />
+    <Compile Include="Component\Excel\ExcelWriter.cs" />
+    <Compile Include="Component\UploadFileManager.cs" />
     <Compile Include="Component\FormatConverter.cs" />
     <Compile Include="Component\MetadataReader.cs" />
     <Compile Include="Component\Navigation.cs" />
@@ -83,6 +84,8 @@
     <Compile Include="Context\SysContext.cs" />
     <Compile Include="Context\UserContext.cs" />
     <Compile Include="Component\AuthCode.cs" />
+    <Compile Include="Controllers\BatchImport\BatchImportController.cs" />
+    <Compile Include="Controllers\BatchImport\BatchImportDemoController.cs" />
     <Compile Include="Controllers\CommonServiceController.cs" />
     <Compile Include="Controllers\DemoController.cs" />
     <Compile Include="Filters\Action\ActionPerformanceAttribute.cs" />
@@ -93,12 +96,14 @@
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="App_Code\RouteInfo.cs" />
-    <Compile Include="Component\ExcelReport.cs" />
+    <Compile Include="Component\Excel\ExcelReport.cs" />
     <Compile Include="App_Code\MimeHelper.cs" />
     <Compile Include="HtmlHelper\RecursionDropDownHelper.cs" />
+    <Compile Include="Models\BatchImportViewModel.cs" />
     <Compile Include="Models\Controls\ExcelDisplayViewModel.cs" />
     <Compile Include="Models\Controls\LinkViewModel.cs" />
     <Compile Include="Models\Controls\NoticeViewModel.cs" />
+    <Compile Include="Models\Controls\UploadSettingsViewModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -116,6 +121,13 @@
     <Content Include="Content\UpgradeLog\UpgradeLog_2013-5-14.xml" />
     <Content Include="Content\UpgradeLog\升级日志模版\UpgradeLog_2013-5-14.xml" />
     <Content Include="FavIcon.ico" />
+    <Content Include="Plugins\Uploadify\Change Log.txt" />
+    <Content Include="Plugins\Uploadify\jquery.uploadify.js" />
+    <Content Include="Plugins\Uploadify\jquery.uploadify.min.js" />
+    <Content Include="Plugins\Uploadify\license.txt" />
+    <Content Include="Plugins\Uploadify\uploadify-cancel.png" />
+    <Content Include="Plugins\Uploadify\uploadify.css" />
+    <Content Include="Plugins\Uploadify\uploadify.swf" />
     <Content Include="Scripts\bootstrap.js" />
     <Content Include="Scripts\bootstrap.min.js" />
     <Content Include="Content\Description\项目说明.txt" />
@@ -159,6 +171,7 @@
     <Content Include="Views\Shared\Controls\ExcelReportView.cshtml" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="Content\ImportTemplate\批量导入模版.xlsx" />
     <None Include="Content\ReportTemplate\Excel动态报表模版Demo.xlsx" />
     <None Include="Content\ReportTemplate\Excel报表模版Demo.xlsx" />
     <Content Include="Views\Demo\AuthCodeDemo.cshtml" />
@@ -194,6 +207,13 @@
     <Content Include="Views\Demo\ProgressBar.cshtml" />
     <Content Include="Views\Demo\DataGrid.cshtml" />
     <None Include="Content\Json\dataGrid.json" />
+    <None Include="Plugins\Uploadify\check-exists.php" />
+    <None Include="Plugins\Uploadify\index.php" />
+    <None Include="Plugins\Uploadify\uploadify.php" />
+    <Content Include="Views\Shared\Controls\UploadPartial.cshtml" />
+    <Content Include="Views\BatchImport\Index.cshtml" />
+    <Content Include="Views\Demo\BatchImport.cshtml" />
+    <Content Include="Views\Demo\BatchImportDemo.cshtml" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v10.0\WebApplications\Microsoft.WebApplication.targets" />

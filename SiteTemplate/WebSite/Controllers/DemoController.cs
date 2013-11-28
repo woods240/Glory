@@ -8,6 +8,7 @@ using FlexCel.Core;
 using System.ComponentModel;
 using System.Reflection;
 using System.Xml;
+using System.Web.Security;
 
 namespace WebSite.Controllers
 {
@@ -73,6 +74,10 @@ namespace WebSite.Controllers
             return View();
         }
         public ActionResult DataGrid()
+        {
+            return View();
+        }
+        public ActionResult BatchImport()
         {
             return View();
         }
@@ -171,8 +176,9 @@ namespace WebSite.Controllers
             using (ExcelReader excelReader = new ExcelReader(SysContext.Config.ReportTemplateDirectory_Physical + "测试模板.xlsx", true))
             {
                 List<DynamicExcelDataViewModel> modelList = excelReader.Read<DynamicExcelDataViewModel>("哈哈");
-                DataTable 数据表 = FormatConverter.ListToDataTable<DynamicExcelDataViewModel>(modelList,
-                    (p => p.GetCustomAttributes(typeof(DisplayNameAttribute), true).Length > 0));
+                DataTable 数据表 = FormatConverter.ListToDataTable<DynamicExcelDataViewModel>(
+                    modelList,
+                    property => property.Name);
                 数据表.TableName = "数据表";
                 dataSource.Tables.Add(数据表);
             }
@@ -231,8 +237,7 @@ namespace WebSite.Controllers
 
             DataTable dataTable = FormatConverter.ListToDataTable<ExcelDataViewModel>(
                 modelList,
-                (p => p.GetCustomAttributes(typeof(DisplayNameAttribute), true).Length > 0),
-                useDisplayName: true);
+                property => MetadataReader.GetDisplayName(property));
             return View("~/Views/Shared/Controls/Table_DataTable_Partial.cshtml", dataTable);
 
             //return View("~/Views/Shared/Controls/Table_IEnumerable_Partial.cshtml", modelList);
@@ -262,6 +267,29 @@ namespace WebSite.Controllers
             string filePath = SysContext.Config.TempDirectory_Physical + SysContext.CommonService.CreateUniqueNameForFile("siteMapDemo.xml");
             userContext.Navigation.RootNode.Save(filePath);
             return File(filePath, MimeHelper.GetMIMETypeForFile(".xml"));
+        }
+
+        public ActionResult BatchImportDemo()
+        {
+            BatchImportViewModel batchImportViewModel = new BatchImportViewModel();
+            batchImportViewModel.Title = "批量导入Demo";
+            batchImportViewModel.TemplatePath = Server.MapPath("/Content/ImportTemplate/批量导入模版.xlsx");
+            batchImportViewModel.TemplateDownloadName = "批量导入模版Demo";
+            batchImportViewModel.SheetName = "批量导入数据Demo";
+            batchImportViewModel.UploadSettings = new UploadSettingsViewModel("file_upload",
+                "/BatchImportDemo/Import",
+                new
+                {
+                    templateDownloadName = batchImportViewModel.TemplateDownloadName,
+                    sheetName = batchImportViewModel.SheetName,
+                    ASPSESSID = Session.SessionID,
+                    AUTHID = Request.Cookies[FormsAuthentication.FormsCookieName] != null
+                        ? Request.Cookies[FormsAuthentication.FormsCookieName].Value
+                        : string.Empty
+                }
+            );
+            
+            return View(batchImportViewModel);
         }
 
         #endregion

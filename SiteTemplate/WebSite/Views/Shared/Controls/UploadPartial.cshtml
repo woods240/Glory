@@ -1,0 +1,58 @@
+﻿@model UploadSettingsViewModel
+<div class="control-group">
+    <input type="file" name="@Model.ControlId" id="@Model.ControlId" />
+    <button class="btn btn-info" onclick="$('#@Model.ControlId').uploadify('upload');">
+        <i class="icon-arrow-up icon-white"></i>
+        <strong>开始上传</strong>
+    </button>
+</div>
+<script type="text/javascript">
+    $(function () {
+        $('#@Model.ControlId').uploadify({
+            // 服务端Action
+            'uploader': '@Model.CallbackUrl',
+
+            // 上传文件约束         
+            'fileSizeLimit': '@Model.FileSizeLimit' + 'MB',
+            'fileTypeExts': '@Model.FileTypeExts',
+            'fileTypeDesc': '@Model.FileTypeDesc',
+            'formData': @Html.Raw(Model.FormData),
+            'auto': false,
+            'method': 'post',
+            'multi': false,
+            'queueSizeLimit': 1,
+            'successTimeout': 0,
+
+            // 外观定制
+            'buttonClass': '',
+            'buttonText': '@Model.ButtonText',
+            'progressData': 'speed',
+            'removeCompleted': true,
+            'removeTimeout': 5,
+            'height': 28,
+            'width': 80,
+            'swf': '/Plugins/Uploadify/uploadify.swf',
+
+            // 事件
+            'onUploadSuccess': function(file, data, response) {
+                var dataObj = eval('(' + data + ')'); // 解析JSON字符串
+                @Model.OnUploadSuccess
+                //alert(file.name + ' 上传成功，返回数据 ' + dataObj.Name + ':' + dataObj.Error);
+            },
+            'onUploadError': function(file, errorCode, errorMsg, errorString) {
+                alert(file.name + ' 未能上传：' + (errorString == 'Cancelled' ? '被取消' : errorString));
+            },
+            'onUploadStart' : function(file) {
+                //alert('开始上传 ' + file.name);
+//                addProgressTip($('#@Model.ControlId').parent());
+            },
+            'onUploadComplete': function(file) {
+                //alert(file.name + ' 完成上传');
+//                removeProgressTip($('#@Model.ControlId').parent());
+            },
+            'onSelect': function() {
+                @Model.OnSelect
+            }
+        }); 
+    });
+</script>

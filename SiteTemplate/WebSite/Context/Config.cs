@@ -9,6 +9,7 @@ namespace WebSite
 {
     /// <summary>
     /// 系统配置(Web.config)
+    /// (只在应用启动时读取一次，修改配置后需要重启)
     /// </summary>
     public class Config
     {
@@ -17,57 +18,33 @@ namespace WebSite
         /// </summary>
         public bool IsReleaseMode
         {
-            get { return ConfigurationManager.AppSettings["Release"].Equals("true"); }
+            get
+            {
+                if (!_isReleaseMode.HasValue)
+                {
+                    _isReleaseMode = ConfigurationManager.AppSettings["Release"].Equals("true");
+                }
+
+                return _isReleaseMode.Value;
+            }
         }
+        private bool? _isReleaseMode;
 
         /// <summary>
         /// 启用性能日志
         /// </summary>
         public bool EnablePerformanceLog
         {
-            get { return ConfigurationManager.AppSettings["EnablePerformanceLog"].Equals("true"); }
-        }
-
-        /// <summary>
-        /// 上传目录（虚拟）
-        /// </summary>
-        public string UploadDirectory_Virtual
-        {
-            get { return ConfigurationManager.AppSettings["UploadDirectory_Virtual"]; }
-        }
-
-        /// <summary>
-        /// Excel报表模版目录（虚拟）
-        /// </summary>
-        public string ReportTemplateDirectory_Virtual
-        {
-            get { return ConfigurationManager.AppSettings["ReportTemplateDirectory_Virtual"]; }
-        }
-
-        /// <summary>
-        /// 临时文件目录（虚拟）
-        /// </summary>
-        public string TempDirectory_Virtual
-        {
-            get { return ConfigurationManager.AppSettings["TempDirectory_Virtual"]; }
-        }
-
-        /// <summary>
-        /// 上传目录（物理）
-        /// </summary>
-        public string UploadDirectory_Physical
-        {
-            get
-            {
-                string uploadDirectory_Physical = HttpContext.Current.Server.MapPath(UploadDirectory_Virtual);
-                if (!Directory.Exists(uploadDirectory_Physical))
+            get {
+                if (!_enablePerformanceLog.HasValue)
                 {
-                    Directory.CreateDirectory(uploadDirectory_Physical);
+                    _enablePerformanceLog = ConfigurationManager.AppSettings["EnablePerformanceLog"].Equals("true");
                 }
 
-                return uploadDirectory_Physical;
+                return _enablePerformanceLog.Value;
             }
         }
+        private bool? _enablePerformanceLog;
 
         /// <summary>
         /// Excel报表模版目录（物理）
@@ -76,15 +53,24 @@ namespace WebSite
         {
             get
             {
-                string reportTemplateDirectory_Physical = HttpContext.Current.Server.MapPath(ReportTemplateDirectory_Virtual);
-                if (!Directory.Exists(reportTemplateDirectory_Physical))
+                if (string.IsNullOrEmpty(_reportTemplateDirectory_Physical))
                 {
-                    Directory.CreateDirectory(reportTemplateDirectory_Physical);
+                    _reportTemplateDirectory_Physical = ConfigurationManager.AppSettings["ReportTemplateDirectory_Physical"];
+                    if (string.IsNullOrEmpty(_reportTemplateDirectory_Physical))
+                    {
+                        _reportTemplateDirectory_Physical = HttpContext.Current.Server.MapPath("/Content/ReportTemplate/");
+                    }
                 }
 
-                return reportTemplateDirectory_Physical;
+                if (!Directory.Exists(_reportTemplateDirectory_Physical))
+                {
+                    Directory.CreateDirectory(_reportTemplateDirectory_Physical);
+                }
+
+                return _reportTemplateDirectory_Physical;
             }
         }
+        private string _reportTemplateDirectory_Physical;
 
         /// <summary>
         /// 临时文件目录（物理）
@@ -93,14 +79,49 @@ namespace WebSite
         {
             get
             {
-                string tempDirectory_Physical = HttpContext.Current.Server.MapPath(TempDirectory_Virtual);
-                if (!Directory.Exists(tempDirectory_Physical))
+                if (string.IsNullOrEmpty(_tempDirectory_Physical))
                 {
-                    Directory.CreateDirectory(tempDirectory_Physical);
+                    _tempDirectory_Physical = ConfigurationManager.AppSettings["TempDirectory_Physical"];
+                    if (string.IsNullOrEmpty(_tempDirectory_Physical))
+                    {
+                        _tempDirectory_Physical = HttpContext.Current.Server.MapPath("/Content/Temp/");
+                    }
                 }
 
-                return tempDirectory_Physical;
+                if (!Directory.Exists(_tempDirectory_Physical))
+                {
+                    Directory.CreateDirectory(_tempDirectory_Physical);
+                }
+
+                return _tempDirectory_Physical;
             }
         }
+        private string _tempDirectory_Physical;
+
+        /// <summary>
+        /// 上传文件目录（物理）
+        /// </summary>
+        public string UploadDirectory_Physical
+        {
+            get
+            {
+                if (string.IsNullOrEmpty(_uploadDirectory_Physical))
+                {
+                    _uploadDirectory_Physical = ConfigurationManager.AppSettings["UploadDirectory_Physical"];
+                    if (string.IsNullOrEmpty(_uploadDirectory_Physical))
+                    {
+                        _uploadDirectory_Physical = HttpContext.Current.Server.MapPath("/Content/Upload/");
+                    }
+                }
+
+                if (!Directory.Exists(_uploadDirectory_Physical))
+                {
+                    Directory.CreateDirectory(_uploadDirectory_Physical);
+                }
+
+                return _uploadDirectory_Physical;
+            }
+        }
+        private string _uploadDirectory_Physical;
     }
 }
