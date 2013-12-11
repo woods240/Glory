@@ -38,8 +38,7 @@ namespace WebSite.Controllers
             {
                 return Json(new { StatusCode = 0 }, JsonRequestBehavior.AllowGet);
             }
-            Guid fileId = SysContext.UploadFileManager.AddUploadFile(file);
-            string filePhysicalPath = SysContext.UploadFileManager.GetFilePath(fileId);
+            string filePhysicalPath = SysContext.UploadFileManager.AddUploadFile(file);
 
             // 2.读取上传文件
             ExcelInterpreter excelInterpreter = GetExcelInterpreter(filePhysicalPath, sheetName);

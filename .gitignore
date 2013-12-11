@@ -17,6 +17,8 @@ TestResults
 [Dd]ebug/
 [Rr]elease/
 [Pp]akage/
+[Tt]emp/
+[Uu]pload/
 x64/
 *_i.c
 *_p.c

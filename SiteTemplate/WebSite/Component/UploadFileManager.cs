@@ -40,15 +40,15 @@ namespace WebSite.Component
         /// 保存上传文件
         /// </summary>
         /// <param name="file">上传文件</param>
-        /// <returns>文件编号</returns>
-        public Guid AddUploadFile(HttpPostedFileBase file)
+        /// <returns>文件路径</returns>
+        public string AddUploadFile(HttpPostedFileBase file)
         {
             Guid fileId = Guid.NewGuid();
             string fileName = CreateUniqueNameForNewFile(file.FileName, fileId);
             string filePath = string.Format("{0}\\{1}", _uploadFolder, fileName);
             file.SaveAs(filePath);
 
-            return fileId;
+            return filePath;
         }
 
         /// <summary>
@@ -75,7 +75,7 @@ namespace WebSite.Component
         public string GetFilePath(Guid fileId)
         {
             string fileIdString = fileId.ToString();
-            string[] allUploadFiles = GetAllUploadedFiles();
+            string[] allUploadFiles = GetAllUploadedFilesName();
             string filePath = allUploadFiles.FirstOrDefault(f => Path.GetFileNameWithoutExtension(f).EndsWith(fileIdString));
             if (string.IsNullOrEmpty(filePath))
             {
@@ -86,14 +86,34 @@ namespace WebSite.Component
         }
 
         /// <summary>
-        /// 获取所有上传文件
+        /// 获取所有上传文件路径的集合
         /// </summary>
         /// <returns>上传文件路径的集合</returns>
-        public string[] GetAllUploadedFiles()
+        public string[] GetAllUploadedFilesName()
         {
             return Directory.GetFiles(_uploadFolder, "*", SearchOption.TopDirectoryOnly);
         }
 
+        /// <summary>
+        /// 获取所有上传文件编号的集合
+        /// </summary>
+        /// <returns>上传文件编号的集合</returns>
+        public Guid[] GetAllUploadedFilesId()
+        {
+            string[] allUploadedFilesName = GetAllUploadedFilesName();
+            return allUploadedFilesName.Select(f =>
+            {
+                string name = Path.GetFileNameWithoutExtension(f);
+                return Guid.Parse(name.Substring(name.Length - 36));
+            }).ToArray();
+        }
+
+        /// <summary>
+        /// 为上传文件创建唯一的文件名
+        /// </summary>
+        /// <param name="fileName">原来的名称</param>
+        /// <param name="guid">文件编号</param>
+        /// <returns>新的文件名</returns>
         private string CreateUniqueNameForNewFile(string fileName, Guid guid)
         {
             string name = Path.GetFileNameWithoutExtension(fileName);

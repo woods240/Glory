@@ -7,6 +7,9 @@ using FlexCel.Core;
 
 namespace WebSite.Controllers.BatchImport
 {
+    /// <summary>
+    /// 批量处理Demo
+    /// </summary>
     public class BatchImportDemoController : BatchImportController<DemoController.ExcelDataViewModel>
     {
         protected override ExcelInterpreter GetExcelInterpreter(string excelPath, string sheetName)
